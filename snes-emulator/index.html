@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Mario World - SNES</title>
+    <style>
+        body {
+            margin: 0;
+            background: #111;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        #game {
+            width: 100%;
+            max-width: 800px;
+            aspect-ratio: 4/3;
+            background: #000;
+        }
+    </style>
+</head>
+<body>
+    <div id="game"></div>
+
+    <script>
+        EJS_player = '#game';
+        EJS_core = 'snes';
+        EJS_gameUrl = 'roms/Super Mario World (USA).sfc';
+        EJS_gameName = 'Super Mario World';
+        EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
+        EJS_startOnLoaded = true;
+    </script>
+    <script src="https://cdn.emulatorjs.org/stable/data/loader.js"></script>
+</body>
+</html>
