@@ -165,41 +165,35 @@
 <body>
 
     <div class="console-body">
-        <!-- Área da Tela do Jogo -->
         <div class="screen-container">
             <div id="game"></div>
         </div>
 
-        <!-- Botões Select e Start -->
         <div class="middle-buttons">
-            <button class="pill-btn" data-key="Shift"></button>
-            <button class="pill-btn" data-key="Enter"></button>
+            <button class="pill-btn" data-button="SELECT"></button>
+            <button class="pill-btn" data-button="START"></button>
         </div>
 
-        <!-- Painel de Controles -->
         <div class="controls-panel">
-            <!-- Direcionais (D-Pad) -->
             <div class="dpad-container">
                 <div class="dpad">
-                    <button class="dpad-btn dpad-up" data-key="ArrowUp">▲</button>
-                    <button class="dpad-btn dpad-down" data-key="ArrowDown">▼</button>
-                    <button class="dpad-btn dpad-left" data-key="ArrowLeft">◄</button>
-                    <button class="dpad-btn dpad-right" data-key="ArrowRight">►</button>
+                    <button class="dpad-btn dpad-up" data-button="UP">▲</button>
+                    <button class="dpad-btn dpad-down" data-button="DOWN">▼</button>
+                    <button class="dpad-btn dpad-left" data-button="LEFT">◄</button>
+                    <button class="dpad-btn dpad-right" data-button="RIGHT">►</button>
                     <div class="dpad-center"></div>
                 </div>
             </div>
 
-            <!-- Botões A B X Y -->
             <div class="action-container">
-                <button class="btn-action btn-blue" data-key="x"></button>
-                <button class="btn-action btn-green" data-key="z"></button>
-                <button class="btn-action btn-red" data-key="a"></button>
-                <button class="btn-action btn-yellow" data-key="s"></button>
+                <button class="btn-action btn-blue" data-button="X"></button>
+                <button class="btn-action btn-green" data-button="Y"></button>
+                <button class="btn-action btn-red" data-button="A"></button>
+                <button class="btn-action btn-yellow" data-button="B"></button>
             </div>
         </div>
     </div>
 
-    <!-- Configuração do EmuladorJS -->
     <script>
         EJS_player = '#game';
         EJS_core = 'snes';
@@ -210,38 +204,66 @@
     </script>
     <script src="https://cdn.emulatorjs.org/stable/data/loader.js"></script>
 
-    <!-- Mapeamento de Toque dos Botões Físicos da Tela -->
     <script>
-        function simulateKeyEvent(type, key) {
-            const event = new KeyboardEvent(type, {
-                key: key,
-                bubbles: true,
-                cancelable: true
-            });
-            document.dispatchEvent(event);
+        // Mapeamento dos botões para os códigos aceites pelo EmulatorJS
+        const buttonMap = {
+            'UP': 4,
+            'DOWN': 5,
+            'LEFT': 6,
+            'RIGHT': 7,
+            'A': 0,
+            'B': 1,
+            'X': 2,
+            'Y': 3,
+            'SELECT': 8,
+            'START': 9
+        };
+
+        function sendButtonState(btnName, isPressed) {
+            if (typeof EJS_emulator !== 'undefined' && EJS_emulator.gameManager) {
+                const btnCode = buttonMap[btnName];
+                if (btnCode !== undefined) {
+                    EJS_emulator.gameManager.simulateInput(0, btnCode, isPressed ? 1 : 0);
+                }
+            } else {
+                // Fallback via teclado padrão caso a API do emulador ainda não esteja pronta
+                const keyMap = {
+                    'UP': 'ArrowUp', 'DOWN': 'ArrowDown', 'LEFT': 'ArrowLeft', 'RIGHT': 'ArrowRight',
+                    'A': 'a', 'B': 's', 'X': 'x', 'Y': 'z', 'SELECT': 'Shift', 'START': 'Enter'
+                };
+                const key = keyMap[btnName];
+                if (key) {
+                    const event = new KeyboardEvent(isPressed ? 'keydown' : 'keyup', { key: key, bubbles: true });
+                    document.dispatchEvent(event);
+                }
+            }
         }
 
-        const buttons = document.querySelectorAll('[data-key]');
-        
-        buttons.forEach(button => {
-            const key = button.getAttribute('data-key');
+        const buttons = document.querySelectorAll('[data-button]');
 
-            // Eventos para Dispositivos Mobile (Touch)
+        buttons.forEach(button => {
+            const btnName = button.getAttribute('data-button');
+
+            // Eventos de Toque no Telemóvel
             button.addEventListener('touchstart', (e) => {
                 e.preventDefault();
-                simulateKeyEvent('keydown', key);
-            });
+                sendButtonState(btnName, true);
+            }, { passive: false });
 
             button.addEventListener('touchend', (e) => {
                 e.preventDefault();
-                simulateKeyEvent('keyup', key);
-            });
+                sendButtonState(btnName, false);
+            }, { passive: false });
 
-            // Suporte adicional para clique de Mouse
-            button.addEventListener('mousedown', () => simulateKeyEvent('keydown', key));
-            button.addEventListener('mouseup', () => simulateKeyEvent('keyup', key));
+            button.addEventListener('touchcancel', (e) => {
+                e.preventDefault();
+                sendButtonState(btnName, false);
+            }, { passive: false });
+
+            // Suporte para testes no PC com Rato
+            button.addEventListener('mousedown', () => sendButtonState(btnName, true));
+            button.addEventListener('mouseup', () => sendButtonState(btnName, false));
         });
     </script>
 </body>
 </html>
-
