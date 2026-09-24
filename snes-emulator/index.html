@@ -35,6 +35,7 @@
             flex-direction: column;
             align-items: center;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            position: relative;
         }
 
         /* Área da Tela */
@@ -57,7 +58,7 @@
             overflow: hidden;
         }
 
-        /* Botões Select e Start */
+        /* Botões Select e Start visuais da carcaça */
         .middle-buttons {
             display: flex;
             gap: 15px;
@@ -70,13 +71,7 @@
             background: #7b8794;
             border-radius: 10px;
             border: none;
-            cursor: pointer;
             box-shadow: inset 0 -2px 0 rgba(0,0,0,0.3);
-        }
-
-        .pill-btn:active {
-            transform: scale(0.95);
-            background: #616e7c;
         }
 
         /* Painel de Controles da Base */
@@ -86,9 +81,10 @@
             justify-content: space-between;
             align-items: center;
             padding: 0 10px;
+            min-height: 130px;
         }
 
-        /* D-Pad (Direcional) */
+        /* Desenho do D-Pad na carcaça */
         .dpad-container {
             width: 120px;
             height: 120px;
@@ -107,19 +103,14 @@
             height: 90px;
         }
 
-        .dpad-btn {
+        .dpad-part {
             position: absolute;
             background: #cbd2d9;
-            border: none;
             display: flex;
             justify-content: center;
             align-items: center;
             color: #616e7c;
             font-size: 14px;
-        }
-
-        .dpad-btn:active {
-            background: #9aa5b1;
         }
 
         .dpad-up { top: 0; left: 30px; width: 30px; height: 35px; border-radius: 5px 5px 0 0; }
@@ -128,7 +119,7 @@
         .dpad-right { top: 30px; right: 0; width: 35px; height: 30px; border-radius: 0 5px 5px 0; }
         .dpad-center { top: 30px; left: 30px; width: 30px; height: 30px; background: #cbd2d9; }
 
-        /* Botões de Ação ABXY */
+        /* Desenho dos Botões ABXY na carcaça */
         .action-container {
             width: 130px;
             height: 130px;
@@ -142,18 +133,11 @@
             padding: 12px;
         }
 
-        .btn-action {
+        .btn-circle {
             width: 42px;
             height: 42px;
             border-radius: 50%;
-            border: none;
-            cursor: pointer;
             box-shadow: 0 4px 0 rgba(0,0,0,0.2);
-        }
-
-        .btn-action:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px 0 rgba(0,0,0,0.2);
         }
 
         .btn-blue { background: #0000ff; grid-column: 1; grid-row: 1; }
@@ -165,35 +149,39 @@
 <body>
 
     <div class="console-body">
+        <!-- Área da Tela do Jogo -->
         <div class="screen-container">
             <div id="game"></div>
         </div>
 
+        <!-- Botões Select e Start -->
         <div class="middle-buttons">
-            <button class="pill-btn" data-button="SELECT"></button>
-            <button class="pill-btn" data-button="START"></button>
+            <div class="pill-btn"></div>
+            <div class="pill-btn"></div>
         </div>
 
+        <!-- Desenho da base do controle -->
         <div class="controls-panel">
             <div class="dpad-container">
                 <div class="dpad">
-                    <button class="dpad-btn dpad-up" data-button="UP">▲</button>
-                    <button class="dpad-btn dpad-down" data-button="DOWN">▼</button>
-                    <button class="dpad-btn dpad-left" data-button="LEFT">◄</button>
-                    <button class="dpad-btn dpad-right" data-button="RIGHT">►</button>
+                    <div class="dpad-part dpad-up">▲</div>
+                    <div class="dpad-part dpad-down">▼</div>
+                    <div class="dpad-part dpad-left">◄</div>
+                    <div class="dpad-part dpad-right">►</div>
                     <div class="dpad-center"></div>
                 </div>
             </div>
 
             <div class="action-container">
-                <button class="btn-action btn-blue" data-button="X"></button>
-                <button class="btn-action btn-green" data-button="Y"></button>
-                <button class="btn-action btn-red" data-button="A"></button>
-                <button class="btn-action btn-yellow" data-button="B"></button>
+                <div class="btn-circle btn-blue"></div>
+                <div class="btn-circle btn-green"></div>
+                <div class="btn-circle btn-red"></div>
+                <div class="btn-circle btn-yellow"></div>
             </div>
         </div>
     </div>
 
+    <!-- Configuração do EmulatorJS habilitando os controles móveis nativos -->
     <script>
         EJS_player = '#game';
         EJS_core = 'snes';
@@ -201,69 +189,11 @@
         EJS_gameName = 'Super Mario World';
         EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
         EJS_startOnLoaded = true;
+        
+        // Ativa os controles touch nativos do emulador dentro do iframe
+        EJS_VirtualGamepadSettings = true;
     </script>
     <script src="https://cdn.emulatorjs.org/stable/data/loader.js"></script>
 
-    <script>
-        // Mapeamento dos botões para os códigos aceites pelo EmulatorJS
-        const buttonMap = {
-            'UP': 4,
-            'DOWN': 5,
-            'LEFT': 6,
-            'RIGHT': 7,
-            'A': 0,
-            'B': 1,
-            'X': 2,
-            'Y': 3,
-            'SELECT': 8,
-            'START': 9
-        };
-
-        function sendButtonState(btnName, isPressed) {
-            if (typeof EJS_emulator !== 'undefined' && EJS_emulator.gameManager) {
-                const btnCode = buttonMap[btnName];
-                if (btnCode !== undefined) {
-                    EJS_emulator.gameManager.simulateInput(0, btnCode, isPressed ? 1 : 0);
-                }
-            } else {
-                // Fallback via teclado padrão caso a API do emulador ainda não esteja pronta
-                const keyMap = {
-                    'UP': 'ArrowUp', 'DOWN': 'ArrowDown', 'LEFT': 'ArrowLeft', 'RIGHT': 'ArrowRight',
-                    'A': 'a', 'B': 's', 'X': 'x', 'Y': 'z', 'SELECT': 'Shift', 'START': 'Enter'
-                };
-                const key = keyMap[btnName];
-                if (key) {
-                    const event = new KeyboardEvent(isPressed ? 'keydown' : 'keyup', { key: key, bubbles: true });
-                    document.dispatchEvent(event);
-                }
-            }
-        }
-
-        const buttons = document.querySelectorAll('[data-button]');
-
-        buttons.forEach(button => {
-            const btnName = button.getAttribute('data-button');
-
-            // Eventos de Toque no Telemóvel
-            button.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                sendButtonState(btnName, true);
-            }, { passive: false });
-
-            button.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                sendButtonState(btnName, false);
-            }, { passive: false });
-
-            button.addEventListener('touchcancel', (e) => {
-                e.preventDefault();
-                sendButtonState(btnName, false);
-            }, { passive: false });
-
-            // Suporte para testes no PC com Rato
-            button.addEventListener('mousedown', () => sendButtonState(btnName, true));
-            button.addEventListener('mouseup', () => sendButtonState(btnName, false));
-        });
-    </script>
 </body>
 </html>
