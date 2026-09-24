@@ -9,6 +9,9 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: none;
+            user-select: none;
         }
 
         body {
@@ -18,9 +21,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            font-family: system-ui, -apple-system, sans-serif;
-            padding: 16px;
+            justify-content: flex-start;
+            padding: 16px 12px 30px;
+            font-family: system-ui, sans-serif;
             overflow-x: hidden;
         }
 
@@ -28,9 +31,6 @@
         .tv {
             width: 100%;
             max-width: 420px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
 
         .tv-screen {
@@ -39,7 +39,6 @@
             border-radius: 18px;
             padding: 12px;
             box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-            position: relative;
         }
 
         .tv-screen-inner {
@@ -56,13 +55,26 @@
             height: 100%;
         }
 
+        /* Esconde os botões padrão do EmulatorJS */
+        #game .ejs_virtualGamepad_container,
+        #game .ejs_virtualGamepad,
+        #game [class*="virtualGamepad"],
+        #game .ejs_control,
+        #game .ejs_menu_button,
+        .ejs_virtualGamepad_container,
+        .ejs_virtualGamepad {
+            display: none !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
         /* pés da TV */
         .tv-feet {
             display: flex;
             gap: 40px;
+            justify-content: center;
             margin-top: 8px;
         }
-
         .tv-feet span {
             width: 36px;
             height: 10px;
@@ -70,36 +82,57 @@
             border-radius: 4px;
         }
 
-        /* ===== CONTROLE (visual do PDF) ===== */
+        /* ===== CONTROLE DO PDF (botões reais) ===== */
         .controller {
             margin-top: 28px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 28px;
+            gap: 32px;
             width: 100%;
             max-width: 340px;
         }
 
         /* D-Pad */
         .dpad {
-            width: 90px;
-            height: 90px;
+            width: 110px;
+            height: 110px;
             background: #d1d5db;
             border-radius: 50%;
             position: relative;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.12);
         }
+
+        .dpad-btn {
+            position: absolute;
+            background: transparent;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            font-size: 18px;
+            z-index: 5;
+        }
+
+        .dpad-btn:active {
+            color: #374151;
+        }
+
+        .dpad-up    { top: 4px;  left: 50%; transform: translateX(-50%); width: 42px; height: 38px; }
+        .dpad-down  { bottom: 4px; left: 50%; transform: translateX(-50%); width: 42px; height: 38px; }
+        .dpad-left  { left: 4px; top: 50%; transform: translateY(-50%); width: 38px; height: 42px; }
+        .dpad-right { right: 4px; top: 50%; transform: translateY(-50%); width: 38px; height: 42px; }
 
         .dpad-cross {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 70px;
-            height: 70px;
+            width: 78px;
+            height: 78px;
+            pointer-events: none;
         }
-
         .dpad-cross::before,
         .dpad-cross::after {
             content: '';
@@ -107,120 +140,88 @@
             background: #9ca3af;
             border-radius: 6px;
         }
-
-        .dpad-cross::before { /* vertical */
-            width: 22px;
-            height: 70px;
+        .dpad-cross::before {
+            width: 26px;
+            height: 78px;
             left: 50%;
             top: 0;
             transform: translateX(-50%);
         }
-
-        .dpad-cross::after { /* horizontal */
-            width: 70px;
-            height: 22px;
+        .dpad-cross::after {
+            width: 78px;
+            height: 26px;
             top: 50%;
             left: 0;
             transform: translateY(-50%);
         }
-
         .dpad-center {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 18px;
-            height: 18px;
+            width: 22px;
+            height: 22px;
             background: #6b7280;
             border-radius: 50%;
             z-index: 2;
+            pointer-events: none;
         }
 
         /* Botões coloridos */
         .buttons {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 14px;
         }
-
         .btn-row {
             display: flex;
-            gap: 10px;
+            gap: 14px;
         }
 
-        .btn {
-            width: 38px;
-            height: 38px;
+        .face-btn {
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+            border: none;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+            cursor: pointer;
+            transition: transform 0.08s, box-shadow 0.08s;
+        }
+        .face-btn:active {
+            transform: scale(0.88);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
-        .btn-blue  { background: #3b82f6; }
-        .btn-green { background: #22c55e; }
-        .btn-red   { background: #ef4444; }
-        .btn-yellow{ background: #eab308; }
+        .btn-blue   { background: #3b82f6; }
+        .btn-green  { background: #22c55e; }
+        .btn-red    { background: #ef4444; }
+        .btn-yellow { background: #eab308; }
 
-        /* Ajuste fino no celular */
-        @media (max-width: 480px) {
-            body {
-                padding: 12px;
-                justify-content: flex-start;
-                padding-top: 20px;
-            }
-
-            .tv {
-                max-width: 100%;
-            }
-
-            .tv-screen {
-                padding: 10px;
-                border-radius: 14px;
-            }
-
-            .controller {
-                margin-top: 24px;
-                gap: 22px;
-            }
-
-            .dpad {
-                width: 82px;
-                height: 82px;
-            }
-
-            .dpad-cross {
-                width: 64px;
-                height: 64px;
-            }
-
-            .dpad-cross::before {
-                width: 20px;
-                height: 64px;
-            }
-
-            .dpad-cross::after {
-                width: 64px;
-                height: 20px;
-            }
-
-            .btn {
-                width: 34px;
-                height: 34px;
-            }
+        /* Start / Select pequenos */
+        .extra-buttons {
+            margin-top: 22px;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+        .extra-btn {
+            background: #d1d5db;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #4b5563;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+        .extra-btn:active {
+            transform: scale(0.92);
         }
 
-        /* Telas muito pequenas */
-        @media (max-width: 360px) {
-            .controller {
-                gap: 16px;
-            }
-            .dpad {
-                width: 74px;
-                height: 74px;
-            }
-            .btn {
-                width: 30px;
-                height: 30px;
-            }
+        @media (max-width: 400px) {
+            .dpad { width: 100px; height: 100px; }
+            .face-btn { width: 44px; height: 44px; }
+            .controller { gap: 24px; }
         }
     </style>
 </head>
@@ -239,34 +240,101 @@
         </div>
     </div>
 
-    <!-- Controle (visual do PDF) -->
+    <!-- Controle do PDF (botões reais) -->
     <div class="controller">
         <!-- D-Pad -->
         <div class="dpad">
             <div class="dpad-cross"></div>
             <div class="dpad-center"></div>
+
+            <button class="dpad-btn dpad-up"    data-key="ArrowUp">▲</button>
+            <button class="dpad-btn dpad-down"  data-key="ArrowDown">▼</button>
+            <button class="dpad-btn dpad-left"  data-key="ArrowLeft">◀</button>
+            <button class="dpad-btn dpad-right" data-key="ArrowRight">▶</button>
         </div>
 
         <!-- Botões coloridos -->
         <div class="buttons">
             <div class="btn-row">
-                <div class="btn btn-green"></div>
-                <div class="btn btn-blue"></div>
+                <button class="face-btn btn-green"  data-key="KeyA" title="Y"></button>
+                <button class="face-btn btn-blue"   data-key="KeyS" title="X"></button>
             </div>
             <div class="btn-row">
-                <div class="btn btn-yellow"></div>
-                <div class="btn btn-red"></div>
+                <button class="face-btn btn-yellow" data-key="KeyZ" title="B"></button>
+                <button class="face-btn btn-red"    data-key="KeyX" title="A"></button>
             </div>
         </div>
     </div>
 
+    <!-- Start e Select -->
+    <div class="extra-buttons">
+        <button class="extra-btn" data-key="ShiftRight">SELECT</button>
+        <button class="extra-btn" data-key="Enter">START</button>
+    </div>
+
     <script>
+        // Configuração do emulador
         EJS_player = '#game';
         EJS_core = 'snes';
         EJS_gameUrl = 'roms/Super Mario World (USA).sfc';
         EJS_gameName = 'Super Mario World';
         EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
         EJS_startOnLoaded = true;
+
+        // Esconde os controles virtuais padrão do EmulatorJS
+        EJS_ready = function () {
+            const style = document.createElement('style');
+            style.innerHTML = `
+                .ejs_virtualGamepad_container,
+                .ejs_virtualGamepad,
+                [class*="virtualGamepad"],
+                .ejs_control_bar .ejs_menu_button,
+                .ejs_gamepad {
+                    display: none !important;
+                    visibility: hidden !important;
+                    opacity: 0 !important;
+                    pointer-events: none !important;
+                }
+            `;
+            document.head.appendChild(style);
+        };
+
+        // Função que simula tecla pressionada
+        function pressKey(code, isDown) {
+            const event = new KeyboardEvent(isDown ? 'keydown' : 'keyup', {
+                code: code,
+                key: code.replace('Key', '').replace('Arrow', ''),
+                bubbles: true,
+                cancelable: true
+            });
+            document.dispatchEvent(event);
+        }
+
+        // Liga os botões do controle
+        document.querySelectorAll('[data-key]').forEach(btn => {
+            const key = btn.getAttribute('data-key');
+
+            // Toque no celular
+            btn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                pressKey(key, true);
+            }, { passive: false });
+
+            btn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                pressKey(key, false);
+            }, { passive: false });
+
+            btn.addEventListener('touchcancel', (e) => {
+                e.preventDefault();
+                pressKey(key, false);
+            }, { passive: false });
+
+            // Também funciona com mouse (para testar no PC)
+            btn.addEventListener('mousedown', () => pressKey(key, true));
+            btn.addEventListener('mouseup', () => pressKey(key, false));
+            btn.addEventListener('mouseleave', () => pressKey(key, false));
+        });
     </script>
     <script src="https://cdn.emulatorjs.org/stable/data/loader.js"></script>
 </body>
