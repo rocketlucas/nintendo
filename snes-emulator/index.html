@@ -2,27 +2,263 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Super Mario World - SNES</title>
     <style>
-        body {
+        * {
             margin: 0;
-            background: #111;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            padding: 0;
+            box-sizing: border-box;
         }
-        #game {
+
+        body {
+            background: #f5f5f5;
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: system-ui, -apple-system, sans-serif;
+            padding: 16px;
+            overflow-x: hidden;
+        }
+
+        /* ===== TV ===== */
+        .tv {
             width: 100%;
-            max-width: 800px;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .tv-screen {
+            width: 100%;
+            background: #9ca3af;
+            border-radius: 18px;
+            padding: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            position: relative;
+        }
+
+        .tv-screen-inner {
+            width: 100%;
             aspect-ratio: 4/3;
             background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #game {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* pés da TV */
+        .tv-feet {
+            display: flex;
+            gap: 40px;
+            margin-top: 8px;
+        }
+
+        .tv-feet span {
+            width: 36px;
+            height: 10px;
+            background: #6b7280;
+            border-radius: 4px;
+        }
+
+        /* ===== CONTROLE (visual do PDF) ===== */
+        .controller {
+            margin-top: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 28px;
+            width: 100%;
+            max-width: 340px;
+        }
+
+        /* D-Pad */
+        .dpad {
+            width: 90px;
+            height: 90px;
+            background: #d1d5db;
+            border-radius: 50%;
+            position: relative;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .dpad-cross {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70px;
+            height: 70px;
+        }
+
+        .dpad-cross::before,
+        .dpad-cross::after {
+            content: '';
+            position: absolute;
+            background: #9ca3af;
+            border-radius: 6px;
+        }
+
+        .dpad-cross::before { /* vertical */
+            width: 22px;
+            height: 70px;
+            left: 50%;
+            top: 0;
+            transform: translateX(-50%);
+        }
+
+        .dpad-cross::after { /* horizontal */
+            width: 70px;
+            height: 22px;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+        }
+
+        .dpad-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 18px;
+            height: 18px;
+            background: #6b7280;
+            border-radius: 50%;
+            z-index: 2;
+        }
+
+        /* Botões coloridos */
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+        }
+
+        .btn-blue  { background: #3b82f6; }
+        .btn-green { background: #22c55e; }
+        .btn-red   { background: #ef4444; }
+        .btn-yellow{ background: #eab308; }
+
+        /* Ajuste fino no celular */
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+                justify-content: flex-start;
+                padding-top: 20px;
+            }
+
+            .tv {
+                max-width: 100%;
+            }
+
+            .tv-screen {
+                padding: 10px;
+                border-radius: 14px;
+            }
+
+            .controller {
+                margin-top: 24px;
+                gap: 22px;
+            }
+
+            .dpad {
+                width: 82px;
+                height: 82px;
+            }
+
+            .dpad-cross {
+                width: 64px;
+                height: 64px;
+            }
+
+            .dpad-cross::before {
+                width: 20px;
+                height: 64px;
+            }
+
+            .dpad-cross::after {
+                width: 64px;
+                height: 20px;
+            }
+
+            .btn {
+                width: 34px;
+                height: 34px;
+            }
+        }
+
+        /* Telas muito pequenas */
+        @media (max-width: 360px) {
+            .controller {
+                gap: 16px;
+            }
+            .dpad {
+                width: 74px;
+                height: 74px;
+            }
+            .btn {
+                width: 30px;
+                height: 30px;
+            }
         }
     </style>
 </head>
 <body>
-    <div id="game"></div>
+
+    <!-- TV -->
+    <div class="tv">
+        <div class="tv-screen">
+            <div class="tv-screen-inner">
+                <div id="game"></div>
+            </div>
+        </div>
+        <div class="tv-feet">
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+
+    <!-- Controle (visual do PDF) -->
+    <div class="controller">
+        <!-- D-Pad -->
+        <div class="dpad">
+            <div class="dpad-cross"></div>
+            <div class="dpad-center"></div>
+        </div>
+
+        <!-- Botões coloridos -->
+        <div class="buttons">
+            <div class="btn-row">
+                <div class="btn btn-green"></div>
+                <div class="btn btn-blue"></div>
+            </div>
+            <div class="btn-row">
+                <div class="btn btn-yellow"></div>
+                <div class="btn btn-red"></div>
+            </div>
+        </div>
+    </div>
 
     <script>
         EJS_player = '#game';
