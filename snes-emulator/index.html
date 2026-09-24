@@ -3,339 +3,245 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Super Mario World - SNES</title>
+    <title>Super Mario World - Portable SNES</title>
     <style>
         * {
-            margin: 0;
-            padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            touch-action: none;
             user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
         }
 
         body {
-            background: #f5f5f5;
+            margin: 0;
+            padding: 10px;
+            background: #1b1b1b;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             min-height: 100vh;
-            min-height: 100dvh;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Moldura do Console */
+        .console-body {
+            background: #ffffff;
+            border: 3px solid #111;
+            border-radius: 25px;
+            width: 100%;
+            max-width: 420px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
-            padding: 16px 12px 30px;
-            font-family: system-ui, sans-serif;
-            overflow-x: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
 
-        /* ===== TV ===== */
-        .tv {
+        /* Área da Tela */
+        .screen-container {
             width: 100%;
-            max-width: 420px;
-        }
-
-        .tv-screen {
-            width: 100%;
-            background: #9ca3af;
-            border-radius: 18px;
-            padding: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-        }
-
-        .tv-screen-inner {
-            width: 100%;
-            aspect-ratio: 4/3;
-            background: #000;
-            border-radius: 10px;
-            overflow: hidden;
-            position: relative;
+            background: #cbd2d9;
+            border-radius: 15px;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
         }
 
         #game {
             width: 100%;
-            height: 100%;
+            aspect-ratio: 4/3;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
         }
 
-        /* Esconde os botões padrão do EmulatorJS */
-        #game .ejs_virtualGamepad_container,
-        #game .ejs_virtualGamepad,
-        #game [class*="virtualGamepad"],
-        #game .ejs_control,
-        #game .ejs_menu_button,
-        .ejs_virtualGamepad_container,
-        .ejs_virtualGamepad {
-            display: none !important;
-            opacity: 0 !important;
-            pointer-events: none !important;
-        }
-
-        /* pés da TV */
-        .tv-feet {
+        /* Botões Select e Start */
+        .middle-buttons {
             display: flex;
-            gap: 40px;
-            justify-content: center;
-            margin-top: 8px;
-        }
-        .tv-feet span {
-            width: 36px;
-            height: 10px;
-            background: #6b7280;
-            border-radius: 4px;
+            gap: 15px;
+            margin-bottom: 25px;
         }
 
-        /* ===== CONTROLE DO PDF (botões reais) ===== */
-        .controller {
-            margin-top: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 32px;
+        .pill-btn {
+            width: 55px;
+            height: 18px;
+            background: #7b8794;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            box-shadow: inset 0 -2px 0 rgba(0,0,0,0.3);
+        }
+
+        .pill-btn:active {
+            transform: scale(0.95);
+            background: #616e7c;
+        }
+
+        /* Painel de Controles da Base */
+        .controls-panel {
             width: 100%;
-            max-width: 340px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
         }
 
-        /* D-Pad */
-        .dpad {
-            width: 110px;
-            height: 110px;
-            background: #d1d5db;
+        /* D-Pad (Direcional) */
+        .dpad-container {
+            width: 120px;
+            height: 120px;
+            background: #f0f4f8;
+            border: 2px solid #cbd2d9;
             border-radius: 50%;
             position: relative;
-            box-shadow: inset 0 2px 6px rgba(0,0,0,0.12);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .dpad {
+            position: relative;
+            width: 90px;
+            height: 90px;
         }
 
         .dpad-btn {
             position: absolute;
-            background: transparent;
+            background: #cbd2d9;
             border: none;
             display: flex;
-            align-items: center;
             justify-content: center;
-            color: #6b7280;
-            font-size: 18px;
-            z-index: 5;
+            align-items: center;
+            color: #616e7c;
+            font-size: 14px;
         }
 
         .dpad-btn:active {
-            color: #374151;
+            background: #9aa5b1;
         }
 
-        .dpad-up    { top: 4px;  left: 50%; transform: translateX(-50%); width: 42px; height: 38px; }
-        .dpad-down  { bottom: 4px; left: 50%; transform: translateX(-50%); width: 42px; height: 38px; }
-        .dpad-left  { left: 4px; top: 50%; transform: translateY(-50%); width: 38px; height: 42px; }
-        .dpad-right { right: 4px; top: 50%; transform: translateY(-50%); width: 38px; height: 42px; }
+        .dpad-up { top: 0; left: 30px; width: 30px; height: 35px; border-radius: 5px 5px 0 0; }
+        .dpad-down { bottom: 0; left: 30px; width: 30px; height: 35px; border-radius: 0 0 5px 5px; }
+        .dpad-left { top: 30px; left: 0; width: 35px; height: 30px; border-radius: 5px 0 0 5px; }
+        .dpad-right { top: 30px; right: 0; width: 35px; height: 30px; border-radius: 0 5px 5px 0; }
+        .dpad-center { top: 30px; left: 30px; width: 30px; height: 30px; background: #cbd2d9; }
 
-        .dpad-cross {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 78px;
-            height: 78px;
-            pointer-events: none;
-        }
-        .dpad-cross::before,
-        .dpad-cross::after {
-            content: '';
-            position: absolute;
-            background: #9ca3af;
-            border-radius: 6px;
-        }
-        .dpad-cross::before {
-            width: 26px;
-            height: 78px;
-            left: 50%;
-            top: 0;
-            transform: translateX(-50%);
-        }
-        .dpad-cross::after {
-            width: 78px;
-            height: 26px;
-            top: 50%;
-            left: 0;
-            transform: translateY(-50%);
-        }
-        .dpad-center {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 22px;
-            height: 22px;
-            background: #6b7280;
-            border-radius: 50%;
-            z-index: 2;
-            pointer-events: none;
+        /* Botões de Ação ABXY */
+        .action-container {
+            width: 130px;
+            height: 130px;
+            background: #cbd2d9;
+            border-radius: 65px;
+            transform: rotate(-35deg);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 10px;
+            padding: 12px;
         }
 
-        /* Botões coloridos */
-        .buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-        .btn-row {
-            display: flex;
-            gap: 14px;
-        }
-
-        .face-btn {
-            width: 48px;
-            height: 48px;
+        .btn-action {
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
             border: none;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.25);
             cursor: pointer;
-            transition: transform 0.08s, box-shadow 0.08s;
-        }
-        .face-btn:active {
-            transform: scale(0.88);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 0 rgba(0,0,0,0.2);
         }
 
-        .btn-blue   { background: #3b82f6; }
-        .btn-green  { background: #22c55e; }
-        .btn-red    { background: #ef4444; }
-        .btn-yellow { background: #eab308; }
-
-        /* Start / Select pequenos */
-        .extra-buttons {
-            margin-top: 22px;
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-        }
-        .extra-btn {
-            background: #d1d5db;
-            border: none;
-            padding: 8px 18px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            color: #4b5563;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-        }
-        .extra-btn:active {
-            transform: scale(0.92);
+        .btn-action:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 rgba(0,0,0,0.2);
         }
 
-        @media (max-width: 400px) {
-            .dpad { width: 100px; height: 100px; }
-            .face-btn { width: 44px; height: 44px; }
-            .controller { gap: 24px; }
-        }
+        .btn-blue { background: #0000ff; grid-column: 1; grid-row: 1; }
+        .btn-green { background: #00a843; grid-column: 1; grid-row: 2; }
+        .btn-red { background: #ff0000; grid-column: 2; grid-row: 1; }
+        .btn-yellow { background: #ffd700; grid-column: 2; grid-row: 2; }
     </style>
 </head>
 <body>
 
-    <!-- TV -->
-    <div class="tv">
-        <div class="tv-screen">
-            <div class="tv-screen-inner">
-                <div id="game"></div>
+    <div class="console-body">
+        <!-- Área da Tela do Jogo -->
+        <div class="screen-container">
+            <div id="game"></div>
+        </div>
+
+        <!-- Botões Select e Start -->
+        <div class="middle-buttons">
+            <button class="pill-btn" data-key="Shift"></button>
+            <button class="pill-btn" data-key="Enter"></button>
+        </div>
+
+        <!-- Painel de Controles -->
+        <div class="controls-panel">
+            <!-- Direcionais (D-Pad) -->
+            <div class="dpad-container">
+                <div class="dpad">
+                    <button class="dpad-btn dpad-up" data-key="ArrowUp">▲</button>
+                    <button class="dpad-btn dpad-down" data-key="ArrowDown">▼</button>
+                    <button class="dpad-btn dpad-left" data-key="ArrowLeft">◄</button>
+                    <button class="dpad-btn dpad-right" data-key="ArrowRight">►</button>
+                    <div class="dpad-center"></div>
+                </div>
             </div>
-        </div>
-        <div class="tv-feet">
-            <span></span>
-            <span></span>
-        </div>
-    </div>
 
-    <!-- Controle do PDF (botões reais) -->
-    <div class="controller">
-        <!-- D-Pad -->
-        <div class="dpad">
-            <div class="dpad-cross"></div>
-            <div class="dpad-center"></div>
-
-            <button class="dpad-btn dpad-up"    data-key="ArrowUp">▲</button>
-            <button class="dpad-btn dpad-down"  data-key="ArrowDown">▼</button>
-            <button class="dpad-btn dpad-left"  data-key="ArrowLeft">◀</button>
-            <button class="dpad-btn dpad-right" data-key="ArrowRight">▶</button>
-        </div>
-
-        <!-- Botões coloridos -->
-        <div class="buttons">
-            <div class="btn-row">
-                <button class="face-btn btn-green"  data-key="KeyA" title="Y"></button>
-                <button class="face-btn btn-blue"   data-key="KeyS" title="X"></button>
-            </div>
-            <div class="btn-row">
-                <button class="face-btn btn-yellow" data-key="KeyZ" title="B"></button>
-                <button class="face-btn btn-red"    data-key="KeyX" title="A"></button>
+            <!-- Botões A B X Y -->
+            <div class="action-container">
+                <button class="btn-action btn-blue" data-key="x"></button>
+                <button class="btn-action btn-green" data-key="z"></button>
+                <button class="btn-action btn-red" data-key="a"></button>
+                <button class="btn-action btn-yellow" data-key="s"></button>
             </div>
         </div>
     </div>
 
-    <!-- Start e Select -->
-    <div class="extra-buttons">
-        <button class="extra-btn" data-key="ShiftRight">SELECT</button>
-        <button class="extra-btn" data-key="Enter">START</button>
-    </div>
-
+    <!-- Configuração do EmuladorJS -->
     <script>
-        // Configuração do emulador
         EJS_player = '#game';
         EJS_core = 'snes';
         EJS_gameUrl = 'roms/Super Mario World (USA).sfc';
         EJS_gameName = 'Super Mario World';
         EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
         EJS_startOnLoaded = true;
+    </script>
+    <script src="https://cdn.emulatorjs.org/stable/data/loader.js"></script>
 
-        // Esconde os controles virtuais padrão do EmulatorJS
-        EJS_ready = function () {
-            const style = document.createElement('style');
-            style.innerHTML = `
-                .ejs_virtualGamepad_container,
-                .ejs_virtualGamepad,
-                [class*="virtualGamepad"],
-                .ejs_control_bar .ejs_menu_button,
-                .ejs_gamepad {
-                    display: none !important;
-                    visibility: hidden !important;
-                    opacity: 0 !important;
-                    pointer-events: none !important;
-                }
-            `;
-            document.head.appendChild(style);
-        };
-
-        // Função que simula tecla pressionada
-        function pressKey(code, isDown) {
-            const event = new KeyboardEvent(isDown ? 'keydown' : 'keyup', {
-                code: code,
-                key: code.replace('Key', '').replace('Arrow', ''),
+    <!-- Mapeamento de Toque dos Botões Físicos da Tela -->
+    <script>
+        function simulateKeyEvent(type, key) {
+            const event = new KeyboardEvent(type, {
+                key: key,
                 bubbles: true,
                 cancelable: true
             });
             document.dispatchEvent(event);
         }
 
-        // Liga os botões do controle
-        document.querySelectorAll('[data-key]').forEach(btn => {
-            const key = btn.getAttribute('data-key');
+        const buttons = document.querySelectorAll('[data-key]');
+        
+        buttons.forEach(button => {
+            const key = button.getAttribute('data-key');
 
-            // Toque no celular
-            btn.addEventListener('touchstart', (e) => {
+            // Eventos para Dispositivos Mobile (Touch)
+            button.addEventListener('touchstart', (e) => {
                 e.preventDefault();
-                pressKey(key, true);
-            }, { passive: false });
+                simulateKeyEvent('keydown', key);
+            });
 
-            btn.addEventListener('touchend', (e) => {
+            button.addEventListener('touchend', (e) => {
                 e.preventDefault();
-                pressKey(key, false);
-            }, { passive: false });
+                simulateKeyEvent('keyup', key);
+            });
 
-            btn.addEventListener('touchcancel', (e) => {
-                e.preventDefault();
-                pressKey(key, false);
-            }, { passive: false });
-
-            // Também funciona com mouse (para testar no PC)
-            btn.addEventListener('mousedown', () => pressKey(key, true));
-            btn.addEventListener('mouseup', () => pressKey(key, false));
-            btn.addEventListener('mouseleave', () => pressKey(key, false));
+            // Suporte adicional para clique de Mouse
+            button.addEventListener('mousedown', () => simulateKeyEvent('keydown', key));
+            button.addEventListener('mouseup', () => simulateKeyEvent('keyup', key));
         });
     </script>
-    <script src="https://cdn.emulatorjs.org/stable/data/loader.js"></script>
 </body>
 </html>
+
